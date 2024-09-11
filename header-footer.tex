@@ -1,0 +1,56 @@
+\documentclass[12pt]{article}
+\usepackage{geometry}      % For setting custom margins
+\usepackage{fancyhdr}      % For custom headers and footers
+\usepackage{lipsum}        % Dummy text for testing content wrapping
+\usepackage{graphicx}      % For including images
+\usepackage[T1]{fontenc}   % Use T1 encoding
+\usepackage{inconsolata}   % Monospace font similar to Consolas
+
+% Define margins for all pages
+\geometry{
+    top=1.5in, bottom=1in, left=1in, right=1in, headheight=1.5in, footskip=1in
+}
+
+% Set up the fancyhdr package for subsequent pages
+\fancypagestyle{plain}{
+    \fancyhf{} % Clear default header and footer
+    \fancyfoot[C]{\footnotesize\texttt{
+    CONTROLLED UNCLASSIFIED INFORMATION (CUI) which must be protected under the Freedom of Information Act (5 U.S.C. 552) and/or the Privacy Act of 1974 (5 U.S.C. 552a). Unauthorized disclosure or misuse of this PERSONAL INFORMATION may result in disciplinary action, criminal and/or civil penalties.
+    }} % Footer with PII text in Inconsolata
+    \renewcommand{\headrulewidth}{0pt} % No horizontal line
+}
+
+% First page header and footer
+\fancypagestyle{firstpage}{
+    \fancyhf{} % Clear default header and footer
+    \fancyhead[L]{\includegraphics[width=1in]{"DAF Seal.png"}} % Header with image
+    \fancyhead[C]{% Header text
+        \textbf{DEPARTMENT OF THE AIR FORCE}\\
+        123d EXAMPLE MEMORANDUM SQUADRON (ACC)\\
+        FORT GEORGE G. MEADE, MARYLAND
+    }
+    \fancyfoot[C]{\footnotesize\texttt{
+    CONTROLLED UNCLASSIFIED INFORMATION (CUI) which must be protected under the Freedom of Information Act (5 U.S.C. 552) and/or the Privacy Act of 1974 (5 U.S.C. 552a). Unauthorized disclosure or misuse of this PERSONAL INFORMATION may result in disciplinary action, criminal and/or civil penalties.
+    }} % Footer with PII text in Inconsolata
+    \renewcommand{\headrulewidth}{0pt} % No horizontal line
+}
+
+% Automatically use the first page style only for the first page
+\AtBeginDocument{\thispagestyle{firstpage}}
+
+\begin{document}
+
+% Memo content on the first page
+\noindent MEMORANDUM FOR~~RECORD \\
+FROM:~~123 EMS/ABC \\
+SUBJECT:~~Use of the Official Memorandum Template
+
+% Add some dummy text to show how it wraps automatically
+\lipsum[1-2] % Replace with actual content
+
+% More dummy content to wrap onto the next page
+\lipsum[3-10] % Replace with actual content
+
+% Content continues and automatically wraps without manual newpage
+
+\end{document}
