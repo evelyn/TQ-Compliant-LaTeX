@@ -1,56 +1,88 @@
 \documentclass[12pt]{article}
-\usepackage{geometry}      % For setting custom margins
-\usepackage{fancyhdr}      % For custom headers and footers
-\usepackage{lipsum}        % Dummy text for testing content wrapping
-\usepackage{graphicx}      % For including images
-\usepackage[T1]{fontenc}   % Use T1 encoding
-\usepackage{inconsolata}   % Monospace font similar to Consolas
 
-% Define margins for all pages
-\geometry{
-    top=1.5in, bottom=1in, left=1in, right=1in, headheight=1.5in, footskip=1in
+% Required packages for document formatting and layout
+\usepackage[letterpaper, portrait, margin=1in, top=1.75in, bottom=1in, headheight=1in, heightrounded]{geometry} % Geometry for general margins in inches
+\usepackage[T1]{fontenc} % Font encoding
+\usepackage{inconsolata} % Monospace font
+\usepackage{datetime, xcolor, fancyhdr, graphicx, enumitem, parskip, mathptmx, calc, amsmath, amsfonts, amssymb, amsthm, afterpage, lipsum} % Various formatting and mathematical tools
+\usepackage{etoolbox} % Allows for dynamic changes to page layout
+
+% Define custom date format (DTG format in military writing)
+\newdateformat{monthyeardate}{%
+  \twodigit{\THEDAY}~\monthname[\THEMONTH]~\THEYEAR} % Format: DD Month YYYY
+
+% Define a custom color for the letterhead (following proper Air Force branding guidelines)
+\definecolor{headercolor}{HTML}{121292}
+
+% Create a command for a styled letterhead with the custom color
+\newcommand{\letterhead}[1]{\textcolor{headercolor}{\textsc{#1}}}
+
+% Set the distance between the main text and the footer (per Tongue & Quill page design)
+\setlength{\footskip}{0.5in}
+
+% Define the content and format of the footer for all pages
+% Ref: Controlled Unclassified Information (CUI) disclaimer
+\fancyfoot[C]{
+    \fontsize{8}{10}\selectfont
+    \texttt{CONTROLLED UNCLASSIFIED INFORMATION (CUI) which must be protected under the Freedom of Information Act (5 U.S.C. 552) and/or the Privacy Act of 1974 (5 U.S.C. 552a). Unauthorized disclosure or misuse of this PERSONAL INFORMATION may result in disciplinary action, criminal and/or civil penalties.}
 }
 
-% Set up the fancyhdr package for subsequent pages
-\fancypagestyle{plain}{
-    \fancyhf{} % Clear default header and footer
-    \fancyfoot[C]{\footnotesize\texttt{
-    CONTROLLED UNCLASSIFIED INFORMATION (CUI) which must be protected under the Freedom of Information Act (5 U.S.C. 552) and/or the Privacy Act of 1974 (5 U.S.C. 552a). Unauthorized disclosure or misuse of this PERSONAL INFORMATION may result in disciplinary action, criminal and/or civil penalties.
-    }} % Footer with PII text in Inconsolata
-    \renewcommand{\headrulewidth}{0pt} % No horizontal line
-}
+% Remove the header and footer lines from all pages
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
 
-% First page header and footer
+% Default page style (no header, footer only)
+\fancypagestyle{default}{\fancyhead{}}
+
+% Custom first page header style, using official DAF seal and squadron details
 \fancypagestyle{firstpage}{
-    \fancyhf{} % Clear default header and footer
-    \fancyhead[L]{\includegraphics[width=1in]{"DAF Seal.png"}} % Header with image
-    \fancyhead[C]{% Header text
-        \textbf{DEPARTMENT OF THE AIR FORCE}\\
-        123d EXAMPLE MEMORANDUM SQUADRON (ACC)\\
-        FORT GEORGE G. MEADE, MARYLAND
+    \fancyhead[L]{\hspace*{-0.5in}\vspace*{-0.25in}\includegraphics[width=1in]{"DAF Seal.png"}} % Air Force seal aligned to left
+    \fancyhead[C]{
+        \letterhead{\textbf{DEPARTMENT OF THE AIR FORCE}}\\
+        \letterhead{123d EXAMPLE MEMORANDUM SQUADRON (ACC)}\\
+        \letterhead{FORT GEORGE G. MEADE, MARYLAND}
     }
-    \fancyfoot[C]{\footnotesize\texttt{
-    CONTROLLED UNCLASSIFIED INFORMATION (CUI) which must be protected under the Freedom of Information Act (5 U.S.C. 552) and/or the Privacy Act of 1974 (5 U.S.C. 552a). Unauthorized disclosure or misuse of this PERSONAL INFORMATION may result in disciplinary action, criminal and/or civil penalties.
-    }} % Footer with PII text in Inconsolata
-    \renewcommand{\headrulewidth}{0pt} % No horizontal line
 }
 
-% Automatically use the first page style only for the first page
-\AtBeginDocument{\thispagestyle{firstpage}}
+
+\newlength\newtop
+\setlength{\newtop}{0.75in}
+
+% Patch the \@outputpage command to dynamically adjust text height and top margin
+\makeatletter
+\patchcmd\@outputpage{\global \@colht \textheight}{%
+\global\textheight=\dimexpr\textheight+\newtop\relax%
+\global\topmargin=\dimexpr\topmargin-\newtop\relax%
+\global\@colht\textheight%
+\global\newtop\z@}{}{\err}
+\makeatother
 
 \begin{document}
 
-% Memo content on the first page
-\noindent MEMORANDUM FOR~~RECORD \\
-FROM:~~123 EMS/ABC \\
-SUBJECT:~~Use of the Official Memorandum Template
+% Use default page style for subsequent pages (no header, CUI footer only)
+\pagestyle{default}
+\thispagestyle{firstpage}
 
-% Add some dummy text to show how it wraps automatically
-\lipsum[1-2] % Replace with actual content
+% Date aligned to the right per AF memorandum standards
+\hfill\monthyeardate\today
 
-% More dummy content to wrap onto the next page
-\lipsum[3-10] % Replace with actual content
+% Memorandum FOR line (used to identify the recipient of the memo)
+% Ref: The Tongue & Quill, Memo Formatting
+\noindent MEMORANDUM FOR~~RECORD
+\vspace{12pt}
 
-% Content continues and automatically wraps without manual newpage
+% MEMO FROM line indicating the sender
+\noindent FROM:~~123 EMS/ABC
 
+\vspace{12pt}
+
+% SUBJECT line stating the purpose of the memo
+\noindent SUBJECT:~~Use of the Official Memorandum Template
+
+\vspace{12pt}
+
+% Main content placeholder (example content using lorem ipsum)
+\lipsum[1-7]
+
+% End of document
 \end{document}
