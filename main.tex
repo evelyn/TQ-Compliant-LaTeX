@@ -1,30 +1,43 @@
 \documentclass[12pt]{article}
 
-% Required packages
-\usepackage[letterpaper, portrait, margin=1in,top=1in,bottom=1in,headheight=1in]{geometry}
-\usepackage[T1]{fontenc}
-\usepackage{inconsolata}
-\usepackage[absolute,overlay]{textpos}
-\usepackage{datetime}
-\usepackage{xcolor, fancyhdr, graphicx, enumitem, parskip, mathptmx, lipsum}
-\usepackage{afterpage}
+% Required packages for document formatting and layout
+% Reference: The Tongue & Quill, use of necessary formatting tools
+\usepackage[letterpaper, portrait, margin=1in,top=1in,bottom=1in,headheight=1in,heightrounded,showframe]{geometry} % `showframe` is used for layout debugging
+\usepackage[T1]{fontenc} % Font encoding
+\usepackage{inconsolata} % Monospace font
+\usepackage{datetime} % Date formatting utilities
+\usepackage{xcolor, fancyhdr, graphicx, enumitem, parskip, mathptmx, calc, amsmath,amsfonts,amssymb, amsthm, lipsum} % Various formatting and mathematical tools
+\usepackage{afterpage} % Allows control of content after a page break
 
-% Custom color
+% Define custom date format (DTG format in military writing)
+\newdateformat{monthyeardate}{%
+  \twodigit{\THEDAY}~\monthname[\THEMONTH]~\THEYEAR} % Format: DD Month YYYY
+
+% Define a custom color for the letterhead (following proper Air Force branding guidelines)
 \definecolor{headercolor}{HTML}{121292}
 
-% Define letterhead formatting
+% Create a command for a styled letterhead with the custom color
 \newcommand{\letterhead}[1]{\textcolor{headercolor}{\textsc{#1}}}
 
-% All pages contain footer
-\fancyfoot[C]{\fontsize{8}{10}\selectfont\texttt{CONTROLLED UNCLASSIFIED INFORMATION (CUI) which must be protected under the Freedom of Information Act (5 U.S.C. 552) and/or the Privacy Act of 1974 (5 U.S.C. 552a). Unauthorized disclosure or misuse of this PERSONAL INFORMATION may result in disciplinary action, criminal and/or civil penalties.}}
+% Set the distance between the main text and the footer (per Tongue & Quill page design)
+\setlength{\footskip}{0.5in}
 
-% Remove header rule line
+% Define the content and format of the footer for all pages
+% Ref: Controlled Unclassified Information (CUI) disclaimer
+\fancyfoot[C]{
+    \fontsize{8}{10}\selectfont
+    \texttt{CONTROLLED UNCLASSIFIED INFORMATION (CUI) which must be protected under the Freedom of Information Act (5 U.S.C. 552) and/or the Privacy Act of 1974 (5 U.S.C. 552a). Unauthorized disclosure or misuse of this PERSONAL INFORMATION may result in disciplinary action, criminal and/or civil penalties.}
+}
+
+% Remove the header line from all pages except the first (cleaner layout per AF standards)
 \renewcommand{\headrulewidth}{0pt}
-% Default page contains no header
+
+% Default page style (no header, footer only)
 \fancypagestyle{default}{\fancyhead{}}
-% First page contains header
+
+% Custom first page header style, using official DAF seal and squadron details
 \fancypagestyle{firstpage}{
-    \fancyhead[L]{\begin{textblock*}{1in}(.5in,.5in)\includegraphics[width=1in]{"DAF Seal.png"}\end{textblock*}}
+    \fancyhead[L]{\hspace*{-0.5in}\vspace*{-0.25in}\includegraphics[width=1in]{"DAF Seal.png"}} % Air Force seal aligned to left
     \fancyhead[C]{
         \letterhead{\textbf{DEPARTMENT OF THE AIR FORCE}}\\
         \letterhead{123d EXAMPLE MEMORANDUM SQUADRON (ACC)}\\
@@ -32,27 +45,39 @@
     }
 }
 
-\newdateformat{monthyeardate}{%
-  \twodigit{\THEDAY}~\monthname[\THEMONTH]~\THEYEAR}
-
 \begin{document}
-\newgeometry{letterpaper, portrait, margin=1in,top=1.5in,bottom=1in,headheight=1.75in}
+
+% Use the custom first page header style defined above
+\newgeometry{margin=1in,top=1.75in,bottom=1in,headheight=1in}
+
 \afterpage{\restoregeometry\clearpage}
+
+% Use default page style for subsequent pages (no header, CUI footer only)
 \pagestyle{default}
+
 \thispagestyle{firstpage}
 
-% CONTENT BELOW
-
-% Align the date to the right, with a fixed space from the top edge
+% Date aligned to the right per AF memorandum standards
 \hfill\monthyeardate\today
 
-% Memorandum Purpose/Recipient, Source, and Subject
+% Memorandum FOR line (used to identify the recipient of the memo)
+% Ref: The Tongue & Quill, Memo Formatting
 \noindent MEMORANDUM FOR~~RECORD
+\vspace{12pt}
 
+% MEMO FROM line indicating the sender
 \noindent FROM:~~123 EMS/ABC
 
+\vspace{12pt}
+
+% SUBJECT line stating the purpose of the memo
 \noindent SUBJECT:~~Use of the Official Memorandum Template
 
-\lipsum[1-18]
+\vspace{12pt}
 
+% Main content placeholder (example content using lorem ipsum)
+\lipsum[1-7]
+
+
+% End of document
 \end{document}
