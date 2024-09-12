@@ -1,40 +1,76 @@
 \documentclass[12pt]{article}
 
-% Required packages for document formatting and layout
-\usepackage[letterpaper, portrait, margin=1in, top=1.75in, bottom=1in, headheight=1in, heightrounded]{geometry} % Geometry for general margins in inches
-\usepackage[T1]{fontenc} % Font encoding
-\usepackage{inconsolata} % Monospace font
-\usepackage{datetime, xcolor, fancyhdr, graphicx, enumitem, parskip, mathptmx, calc, amsmath, amsfonts, amssymb, amsthm, afterpage, lipsum} % Various formatting and mathematical tools
-\usepackage{etoolbox} % Allows for dynamic changes to page layout
+% -------- # Packages
+
+% Document layout and formatting
+\usepackage[letterpaper, portrait, margin=1in, top=1.75in, bottom=1in, headheight=1in, heightrounded]{geometry}
+\usepackage{fancyhdr, afterpage, etoolbox} 
+
+% Fonts and text formatting
+\usepackage[T1]{fontenc}
+\usepackage{inconsolata, mathptmx}
+\usepackage{xcolor, parskip}
+
+% Math and calculations
+\usepackage{amsmath, amsfonts, amssymb, amsthm, calc}
+
+% Date formatting and utilities
+\usepackage{datetime, lipsum}
+
+% Graphics and lists
+\usepackage{graphicx, enumitem}
+
+% -------- # Layout Adjustment
+
+% Custom layout adjustments to dynamically modify text height and top margin
+\newlength\newtop
+\setlength{\newtop}{0.75in} % Set a custom top margin offset (0.75 inches)
+
+% The \@outputpage command is patched to adjust text height and top margin dynamically.
+% The \global commands update the global values for text height and top margin.
+% The \dimexpr command recalculates the dimensions of the text height and top margin:
+%   - It increases text height by the value of \newtop
+%   - It decreases top margin by the value of \newtop
+% This ensures that the layout adjusts automatically without manually resetting the margin or text height every time.
+\makeatletter
+\patchcmd\@outputpage{\global \@colht \textheight}{%
+    \global\textheight=\dimexpr\textheight+\newtop\relax%
+    \global\topmargin=\dimexpr\topmargin-\newtop\relax%
+    \global\@colht\textheight%
+    \global\newtop\z@}{}{\err} % Reset \newtop after adjustment
+\makeatother
+
+% -------- # Custom Settings
 
 % Define custom date format (DTG format in military writing)
 \newdateformat{monthyeardate}{%
   \twodigit{\THEDAY}~\monthname[\THEMONTH]~\THEYEAR} % Format: DD Month YYYY
 
-% Define a custom color for the letterhead (following proper Air Force branding guidelines)
+% Define a custom color for the letterhead (Air Force branding)
 \definecolor{headercolor}{HTML}{121292}
 
-% Create a command for a styled letterhead with the custom color
+% Create a command for styled letterhead with the custom color
 \newcommand{\letterhead}[1]{\textcolor{headercolor}{\textsc{#1}}}
 
-% Set the distance between the main text and the footer (per Tongue & Quill page design)
+% -------- # Header & Footer
+
+% Set the distance between main text and footer (per Tongue & Quill page design)
 \setlength{\footskip}{0.5in}
 
-% Define the content and format of the footer for all pages
-% Ref: Controlled Unclassified Information (CUI) disclaimer
+% Footer content and format for all pages (CUI disclaimer)
 \fancyfoot[C]{
     \fontsize{8}{10}\selectfont
     \texttt{CONTROLLED UNCLASSIFIED INFORMATION (CUI) which must be protected under the Freedom of Information Act (5 U.S.C. 552) and/or the Privacy Act of 1974 (5 U.S.C. 552a). Unauthorized disclosure or misuse of this PERSONAL INFORMATION may result in disciplinary action, criminal and/or civil penalties.}
 }
 
-% Remove the header and footer lines from all pages
+% Remove header and footer lines from all pages
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
 
 % Default page style (no header, footer only)
 \fancypagestyle{default}{\fancyhead{}}
 
-% Custom first page header style, using official DAF seal and squadron details
+% First page header style (DAF seal and squadron details)
 \fancypagestyle{firstpage}{
     \fancyhead[L]{\hspace*{-0.5in}\vspace*{-0.25in}\includegraphics[width=1in]{"DAF Seal.png"}} % Air Force seal aligned to left
     \fancyhead[C]{
@@ -44,39 +80,28 @@
     }
 }
 
-
-\newlength\newtop
-\setlength{\newtop}{0.75in}
-
-% Patch the \@outputpage command to dynamically adjust text height and top margin
-\makeatletter
-\patchcmd\@outputpage{\global \@colht \textheight}{%
-\global\textheight=\dimexpr\textheight+\newtop\relax%
-\global\topmargin=\dimexpr\topmargin-\newtop\relax%
-\global\@colht\textheight%
-\global\newtop\z@}{}{\err}
-\makeatother
-
+% Prepare to begin document after a few settings first
 \begin{document}
-
-% Use default page style for subsequent pages (no header, CUI footer only)
+% Default page style for subsequent pages (no header, CUI footer only)
 \pagestyle{default}
 \thispagestyle{firstpage}
+% -------- # Begin Document
 
-% Date aligned to the right per AF memorandum standards
+
+
+% Date aligned to the right (AF memorandum standards)
 \hfill\monthyeardate\today
 
-% Memorandum FOR line (used to identify the recipient of the memo)
-% Ref: The Tongue & Quill, Memo Formatting
+% Memorandum FOR line (recipient of the memo)
 \noindent MEMORANDUM FOR~~RECORD
 \vspace{12pt}
 
-% MEMO FROM line indicating the sender
+% MEMO FROM line (sender of the memo)
 \noindent FROM:~~123 EMS/ABC
 
 \vspace{12pt}
 
-% SUBJECT line stating the purpose of the memo
+% SUBJECT line (purpose of the memo)
 \noindent SUBJECT:~~Use of the Official Memorandum Template
 
 \vspace{12pt}
@@ -84,5 +109,7 @@
 % Main content placeholder (example content using lorem ipsum)
 \lipsum[1-7]
 
-% End of document
+
+
+% -------- # End Document
 \end{document}
