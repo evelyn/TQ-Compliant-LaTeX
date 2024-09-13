@@ -20,18 +20,19 @@
 % Graphics and lists
 \usepackage{graphicx, enumitem}
 
+% For table layout with wrapping
+\usepackage{tabularx}
+
 % -------- # Layout Adjustment
 
-% Custom layout adjustments to dynamically modify text height and top margin
 \newlength\newtop
 \setlength{\newtop}{0.75in} % Set a custom top margin offset (0.75 inches)
 
-% The \@outputpage command is patched to adjust text height and top margin dynamically.
-% The \global commands update the global values for text height and top margin.
-% The \dimexpr command recalculates the dimensions of the text height and top margin:
-%   - It increases text height by the value of \newtop
-%   - It decreases top margin by the value of \newtop
-% This ensures that the layout adjusts automatically without manually resetting the margin or text height every time.
+\setlength{\parskip}{12pt} % Double spacing between paragraphs
+\setlength{\parindent}{0pt} % No indentation for new paragraphs
+
+% -------- # Custom Settings & Commands
+
 \makeatletter
 \patchcmd\@outputpage{\global \@colht \textheight}{%
     \global\textheight=\dimexpr\textheight+\newtop\relax%
@@ -40,7 +41,17 @@
     \global\newtop\z@}{}{\err} % Reset \newtop after adjustment
 \makeatother
 
-% -------- # Custom Settings
+% Define the extra space (two non-breaking spaces) as a length
+\newcommand{\spaces}{~~}
+\newlength{\extraSpaceLength}
+\settowidth{\extraSpaceLength}{\spaces} % Calculate the width of the extra space
+
+% Define a macro to calculate the column width dynamically with added space
+\newcommand{\setcolumnwidth}[2]{
+    \newlength{#1}%
+    \settowidth{#1}{#2}%
+    \addtolength{#1}{\extraSpaceLength} % Add extra space to the column width
+}
 
 % Define custom date format (DTG format in military writing)
 \newdateformat{monthyeardate}{%
@@ -54,23 +65,18 @@
 
 % -------- # Header & Footer
 
-% Set the distance between main text and footer (per Tongue & Quill page design)
 \setlength{\footskip}{0.5in}
 
-% Footer content and format for all pages (CUI disclaimer)
 \fancyfoot[C]{
     \fontsize{8}{10}\selectfont
     \texttt{CONTROLLED UNCLASSIFIED INFORMATION (CUI) which must be protected under the Freedom of Information Act (5 U.S.C. 552) and/or the Privacy Act of 1974 (5 U.S.C. 552a). Unauthorized disclosure or misuse of this PERSONAL INFORMATION may result in disciplinary action, criminal and/or civil penalties.}
 }
 
-% Remove header and footer lines from all pages
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
 
-% Default page style (no header, footer only)
 \fancypagestyle{default}{\fancyhead{}}
 
-% First page header style (DAF seal and squadron details)
 \fancypagestyle{firstpage}{
     \fancyhead[L]{\hspace*{-0.5in}\vspace*{-0.25in}\includegraphics[width=1in]{"DAF Seal.png"}} % Air Force seal aligned to left
     \fancyhead[C]{
@@ -82,34 +88,51 @@
 
 % Prepare to begin document after a few settings first
 \begin{document}
-% Default page style for subsequent pages (no header, CUI footer only)
 \pagestyle{default}
 \thispagestyle{firstpage}
+
 % -------- # Begin Document
 
-
-
 % Date aligned to the right (AF memorandum standards)
-\hfill\monthyeardate\today
+\noindent\hfill\monthyeardate\today
 
-% Memorandum FOR line (recipient of the memo)
-\noindent MEMORANDUM FOR~~RECORD
-\vspace{12pt}
+% MEMORANDUM FOR: section
 
-% MEMO FROM line (sender of the memo)
-\noindent FROM:~~123 EMS/ABC
+\setcolumnwidth{\memoWidth}{MEMORANDUM FOR:}
+\noindent
+\begin{tabularx}{\textwidth}{@{} p{\memoWidth} @{} X @{}} 
+MEMORANDUM FOR: & TSGT JANE S. AUSTEN (1234567890)\\
+                & SRA CHARLOTTE H. BRONTË (7890123456)\\
+\end{tabularx}
 
-\vspace{12pt}
+% FROM: section
+\setcolumnwidth{\fromWidth}{FROM:}
+\noindent
+\begin{tabularx}{\textwidth}{@{} p{\fromWidth} @{} X @{}} 
+FROM: & TSgt Evelyn Aurora Lee\\
+      & 123d Example Memorandum Squadron\\
+      & 4567 Writing Street\\
+      & Fort George G. Meade, MD 20755 \\
+\end{tabularx}
 
-% SUBJECT line (purpose of the memo)
-\noindent SUBJECT:~~Use of the Official Memorandum Template
+% SUBJECT: section
+\setcolumnwidth{\subjectWidth}{SUBJECT:}
+\noindent
+\begin{tabularx}{\textwidth}{@{} p{\subjectWidth} @{} X @{}} 
+SUBJECT: & Use of the Official Memorandum Template\\
+\end{tabularx}
 
-\vspace{12pt}
+% REFERENCES section
+\setcolumnwidth{\referencesWidth}{References:}
+\noindent
+\begin{tabularx}{\textwidth}{@{} p{\referencesWidth} @{} X @{}} 
+References: & (a)~AFM 33-326, 25 November 2011, \textit{Preparing Official Communications}.\\
+            & (b)~DoDM 5110.04-M-V2, October 26, 2010, \textit{DoD Manual for Written Material} \\
+            & (c)~DAFI 36-1245, September 12, 2024, \textit{Pretending You're a Famous Dead Author and Your Troop is Another Dead Author}.\\
+\end{tabularx}
 
-% Main content placeholder (example content using lorem ipsum)
-\lipsum[1-7]
-
-
+% Main content placeholder
+1.~\lipsum[1-31]
 
 % -------- # End Document
 \end{document}
