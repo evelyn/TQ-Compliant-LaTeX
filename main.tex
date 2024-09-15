@@ -11,7 +11,7 @@
 \usepackage{xcolor, ragged2e, parskip}
 
 % Math and calculations
-\usepackage{amsmath, amsfonts, amssymb, amsthm, calc}
+\usepackage{amsmath, amsfonts, amssymb, amsthm, calc, pgffor}
 
 % Date formatting and utilities
 \usepackage{datetime, lipsum}
@@ -19,7 +19,7 @@
 % Graphics and lists
 \usepackage{graphicx, enumitem}
 
-% For table layout with wrapping
+% For table layout with wrapping and raggedright alignment
 \usepackage{tabularx}
 
 % -------- # Layout Adjustment
@@ -41,7 +41,7 @@
 \newlength{\baseSpaceLength}
 \settowidth{\baseSpaceLength}{~} % Set the base space length to the width of a single non-breaking space
 \newcommand{\spaceLength}[1]{\dimexpr #1\baseSpaceLength\relax} % Define a command that multiplies the length of ~ by a factor
-\newcommand{\indentForLevel}[2]{\dimexpr #2\baseSpaceLength * #1\relax} % Define a command that multiplies the length of ~ by two factors
+\newcommand{\indentLevel}[2]{\dimexpr #2\baseSpaceLength * #1\relax} % Define a command that multiplies the length of ~ by two factors
 
 % Define a macro to calculate the column width dynamically with added space
 \newcommand{\setcolumnwidth}[2]{
@@ -50,15 +50,29 @@
     \addtolength{#1}{\spaceLength{2}} % Add extra space to the column width
 }
 
-% Define custom date format (DTG format in military writing)
+% Define DTG date format
 \newdateformat{DTG}{%
   \twodigit{\THEDAY}~\monthname[\THEMONTH]~\THEYEAR} % Format: DD Month YYYY
 
-% Define a custom color for the letterhead (Air Force branding)
+% Define a custom color for the letterhead (DAF branding)
 \definecolor{headercolor}{HTML}{121292}
 
 % Create a command for styled letterhead with the custom color
 \newcommand{\letterhead}[1]{\textcolor{headercolor}{\textsc{#1}}}
+
+% Create a command to apply list formatting settings for a specific level
+\newcommand{\formatListLevel}[4]{
+  \setlist[enumerate,#1]{
+    label=#2, % The label format for the current list level
+    itemindent=\dimexpr \indentLevel{#1}{#3}\relax, % Controls the left of the margin and the left of the item
+                                                    % The first argument adjusts the overall indentation level (e.g., nesting level)
+                                                    % The second argument sets the scaling factor for the indentation distance
+    left=\spaceLength{0}, % Horizontal movement for everything
+    labelsep=\dimexpr \spaceLength{#4}\relax, % \spaceLength{N} = ~ in label, can be kept as 0 if using ~~
+                                              % label + Distance between content
+    leftmargin=\spaceLength{0} % Align everything flush with the left margin
+  }
+}
 
 % -------- # Header & Footer
 \setlength{\footskip}{0.5in}
@@ -83,83 +97,12 @@
 }
 
 % -------- # List settings
-%%% itemindent=\spaceLength{4}, % no idea what this does
-%%% itemsep=0em, % no idea what this does
-%%% labelindent=0pt, % No idea what this does
-%%% before=\setlength{\listparindent}{0pt}, % Continuation lines align with the left margin (Allegedly? Seems to already be doing that)
-
-
-% First-level list (aligning with margin and wrapping properly)
-\setlist[enumerate,1]{
-    label=\arabic*., % Label text
-    itemindent=\indentForLevel{1}{4}, % Controls the left of the margin and the left of the item
-                                      % The first argument adjusts the overall indentation level (e.g., nesting level)
-                                      % The second argument sets the scaling factor for the indentation distance
-    left=\spaceLength{0}, % Horizontal movement for everything
-    labelsep=\spaceLength{2}, % \spaceLength{N} = ~ in label, can be kept as 0 if using ~~
-                              % label + Distance between content
-    leftmargin=\spaceLength{0}, % Aligns everything with the left margin
-}
-
-% Second-level list (indented first line, wraps to left margin)
-\setlist[enumerate,2]{
-    label=\alph*., % Label text
-    itemindent=\indentForLevel{2}{4}, % Controls the left of the margin and the left of the item
-                                      % The first argument adjusts the overall indentation level (e.g., nesting level)
-                                      % The second argument sets the scaling factor for the indentation distance
-    left=\spaceLength{0}, % Horizontal movement for everything
-    labelsep=\spaceLength{2}, % \spaceLength{N} = ~ in label, can be kept as 0 if using ~~
-                              % label + Distance between content
-    leftmargin=\spaceLength{0}, % Aligns everything with the left margin
-}
-
-% Third-level list (further indented, same behavior)
-\setlist[enumerate,3]{
-    label=(\alph*), % Label text
-    itemindent=\indentForLevel{3}{4}, % Controls the left of the margin and the left of the item
-                                      % The first argument adjusts the overall indentation level (e.g., nesting level)
-                                      % The second argument sets the scaling factor for the indentation distance
-    left=\spaceLength{0}, % Horizontal movement for everything
-    labelsep=\spaceLength{2}, % \spaceLength{N} = ~ in label; can be kept as 0 if using N=~ in label
-                              % label + Distance between content
-    leftmargin=\spaceLength{0}, % Aligns everything with the left margin
-}
-
-% Fourth-level list (further indented, same behavior)
-\setlist[enumerate,4]{
-    label=(\alph*), % Label text
-    itemindent=\indentForLevel{4}{4}, % Controls the left of the margin and the left of the item
-                                      % The first argument adjusts the overall indentation level (e.g., nesting level)
-                                      % The second argument sets the scaling factor for the indentation distance
-    left=\spaceLength{0}, % Horizontal movement for everything
-    labelsep=\spaceLength{2}, % \spaceLength{N} = ~ in label; can be kept as 0 if using N=~ in label
-                              % label + Distance between content
-    leftmargin=\spaceLength{0}, % Aligns everything with the left margin
-}
-
-% Fifth-level list (further indented, same behavior)
-\setlist[enumerate,5]{
-    label=(\alph*), % Label text
-    itemindent=\indentForLevel{5}{4}, % Controls the left of the margin and the left of the item
-                                      % The first argument adjusts the overall indentation level (e.g., nesting level)
-                                      % The second argument sets the scaling factor for the indentation distance
-    left=\spaceLength{0}, % Horizontal movement for everything
-    labelsep=\spaceLength{2}, % \spaceLength{N} = ~ in label; can be kept as 0 if using N=~ in label
-                              % label + Distance between content
-    leftmargin=\spaceLength{0}, % Aligns everything with the left margin
-}
-
-% Sixth-level list (further indented, same behavior)
-\setlist[enumerate,6]{
-    label=(\alph*), % Label text
-    itemindent=\indentForLevel{6}{4}, % Controls the left of the margin and the left of the item
-                                      % The first argument adjusts the overall indentation level (e.g., nesting level)
-                                      % The second argument sets the scaling factor for the indentation distance
-    left=\spaceLength{0}, % Horizontal movement for everything
-    labelsep=\spaceLength{2}, % \spaceLength{N} = ~ in label; can be kept as 0 if using N=~ in label
-                              % label + Distance between content
-    leftmargin=\spaceLength{0}, % Aligns everything with the left margin
-}
+\formatListLevel{1}{\arabic*.}{4}{2}
+\formatListLevel{2}{\alph*.}{4}{2}
+\formatListLevel{3}{(\alph*)}{4}{2}
+\formatListLevel{4}{\roman*.}{4}{2}
+\formatListLevel{5}{(\Alph*)}{4}{2}
+\formatListLevel{6}{(\Roman*)}{4}{2}
 
 % -------- # Page details
 \begin{document}
@@ -173,7 +116,7 @@
 % MEMORANDUM FOR section
 \setcolumnwidth{\memoWidth}{MEMORANDUM FOR}
 \noindent
-\begin{tabularx}{\textwidth}{@{} p{\memoWidth} @{} >{\raggedright\arraybackslash}X @{}} 
+\begin{tabularx}{\textwidth}{@{} p{\memoWidth} @{} >{\RaggedRight}X @{}}
 MEMORANDUM FOR & SSGT ADELINE V. WOOLF (9012345678)\\
                & SRA CHARLOTTE H. BRONTË (7890123456)\\
 \end{tabularx}
@@ -181,7 +124,7 @@ MEMORANDUM FOR & SSGT ADELINE V. WOOLF (9012345678)\\
 % FROM: section
 \setcolumnwidth{\fromWidth}{FROM:}
 \noindent
-\begin{tabularx}{\textwidth}{@{} p{\fromWidth} @{} >{\raggedright\arraybackslash}X @{}} 
+\begin{tabularx}{\textwidth}{@{} p{\fromWidth} @{} >{\RaggedRight}X @{}}
 FROM: & TSGT JANE S. AUSTEN (1234567890)\\
       & 123d Example Memorandum Squadron\\
       & 4567 Writing Street\\
@@ -191,22 +134,21 @@ FROM: & TSGT JANE S. AUSTEN (1234567890)\\
 % SUBJECT: section
 \setcolumnwidth{\subjectWidth}{SUBJECT:}
 \noindent
-\begin{tabularx}{\textwidth}{@{} p{\subjectWidth} @{} >{\raggedright\arraybackslash}X @{}} 
+\begin{tabularx}{\textwidth}{@{} p{\subjectWidth} @{} >{\RaggedRight}X @{}}
 SUBJECT: & Use of the Official Memorandum Template\\
 \end{tabularx}
 
 % REFERENCES section
 \setcolumnwidth{\referencesWidth}{References:}
 \noindent
-\begin{tabularx}{\textwidth}{@{} p{\referencesWidth} @{} >{\raggedright\arraybackslash}X @{}}
-References: & (a)~AFM 33-326, 25 November 2011, \textit{Preparing Official Communications}.\\
-            & (b)~DoDM 5110.04-M-V2, October 26, 2010, \textit{DoD Manual for Written Material}.\\
-            & (c)~DAFI 36-1245, September 12, 2024, \textit{Pretending You're a Famous Dead Author and Your Troop is Another Dead Author}.\\
+\begin{tabularx}{\textwidth}{@{} p{\referencesWidth} @{} >{\RaggedRight}X @{}}
+References: & (a)~AFM 70-420, 20 April 2011, \textit{Preparing Official Communications}.\\
+            & (b)~DoDM 1235.77-M-V8, 09 November, 2010, \textit{DoD Manual for Writing Manuals on Writing Manuals}.\\
+            & (c)~DAFI 42-1245, September 18, 2024, \textit{Pretending You're a Famous Dead Author and Your Troop is Another Dead Author}.\\
 \end{tabularx}
 
 % Main content placeholder
 \begin{enumerate}
-
     \item \lipsum[1] % First level (wraps to margin)
     
     \begin{enumerate}
